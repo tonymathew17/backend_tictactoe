@@ -6,10 +6,8 @@ function savePlayerMove(tileClicked) {
     try {
         if (userClickedTiles.includes(tileClicked)) {
             throw "This tile has already been clicked!"
-        }
-        else {
+        } else {
             userClickedTiles.push(tileClicked);
-            console.log('userClickedTiles: ', userClickedTiles);
             return (tileClicked * tileClicked);
         }
 
