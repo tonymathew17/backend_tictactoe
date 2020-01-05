@@ -10,9 +10,11 @@ app.get('/healthCheck', function (req, res) {
 });
 
 app.get('/refreshBoard', function (req, res) {
+    console.log('Refreshing...');
     res.header("Access-Control-Allow-Origin", "*");
     helper.userClickedTiles.length = 0;
     helper.computerClickedTiles.length = 0;
+    console.log('Refreshed!');
     res.status(200).send('Memory cleared!');
 });
 
@@ -28,7 +30,7 @@ io.on('connection', function (socket) {
             return;
         }
         let computerMove = helper.getComputerMove();
-        console.log('Computer selected ', computerMove);
+        console.log('Computer clicked tile ', computerMove);
         socket.emit('messageFromServer', computerMove);
     });
 });

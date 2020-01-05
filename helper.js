@@ -1,7 +1,7 @@
 let userClickedTiles = [];
 let computerClickedTiles = [];
 let clickedTiles = [];
-let possibleClicks = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+let possibleClicks = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 /**@description This function saves the tile clicked by user */
 function savePlayerMove(tileClicked) {
@@ -21,15 +21,18 @@ function savePlayerMove(tileClicked) {
 
 /**@description This function gets the computer move based on the tile user clicked */
 function getComputerMove() {
-    let tile = Math.floor(Math.random() * 9) + 1;
+    let tile = Math.floor(Math.random() * 9) + 0;
 
     while (userClickedTiles.includes(tile) || computerClickedTiles.includes(tile) &&
         ((Array.from(new Set(clickedTiles)).length != 9) && (!possibleClicks.every(elem => clickedTiles.includes(elem))))) {
-        tile = Math.floor(Math.random() * 9) + 1;
-        console.log('Inside whiel loop');
+        tile = Math.floor(Math.random() * 9) + 0;
+        console.log('Computer selecting best move...');
     }
     computerClickedTiles.push(tile);
     clickedTiles.push(tile);
+    if (clickedTiles.length == possibleClicks.length) {
+        console.log('All cells are clicked!');
+    }
     return tile;
 }
 
