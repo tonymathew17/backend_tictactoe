@@ -36,7 +36,29 @@ function getComputerMove() {
     return tile;
 }
 
+function setupGame(boardSize) {
+    let board = [];
+    let availableCells = [];
+    let humanMoves = [];
+    let computerMoves = [];
+    let cellBoardMap = {};
+    let count = 0;
+
+    // Setting up board
+    for (let i = 0; i < boardSize; i++) {
+        let row = [];
+        for (let j = 0; j < boardSize; j++) {
+            row.push('');
+            availableCells.push(count);
+            cellBoardMap[count] = [i, j];
+            count++;
+        }
+        board.push(row);
+    }
+}
+
 module.exports = {
+    setupGame,
     savePlayerMove,
     getComputerMove,
     userClickedTiles,

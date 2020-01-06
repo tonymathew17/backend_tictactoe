@@ -3,19 +3,27 @@ const app = express();
 const server = require('http').createServer(app);
 const socket = require('socket.io');
 const helper = require('./helper');
+const cors=require('cors');
+
+app.use(cors());
 
 // API to check health of the server
 app.get('/healthCheck', function (req, res) {
     res.send('Connected!');
 });
 
-app.get('/refreshBoard', function (req, res) {
+app.post('/refreshBoard', function (req, res) {
     console.log('Refreshing...');
-    res.header("Access-Control-Allow-Origin", "*");
     helper.userClickedTiles.length = 0;
     helper.computerClickedTiles.length = 0;
     console.log('Refreshed!');
     res.status(200).send('Memory cleared!');
+});
+
+app.post('/setupGame/:boardSize', function (req, res) {
+    let boardSize = req.params.boardSize;
+    console.log('boardSize: ', boardSize);
+    helper.setupGame(boardSize);
 });
 
 var io = socket(server);
