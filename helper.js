@@ -3,64 +3,145 @@ let computerClickedTiles = [];
 let clickedTiles = [];
 let possibleClicks = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-/**@description This function saves the tile clicked by user */
-function savePlayerMove(tileClicked) {
-    try {
-        if (userClickedTiles.includes(tileClicked)) {
-            throw new RangeError("This tile has already been clicked!");
-        } else {
-            userClickedTiles.push(tileClicked);
-            clickedTiles.push(tileClicked);
-            return userClickedTiles;
-        }
+let availableCells = [];
+let humanMoves = [];
+let computerMoves = [];
+let winningCombinations = [];
+let row = [];
+const human = 'human';
+const computer = 'computer';
+let boardSize;
 
-    } catch (error) {
-        return error;
-    }
-}
 
 /**@description This function gets the computer move based on the tile user clicked */
 function getComputerMove() {
-    let tile = Math.floor(Math.random() * 9) + 0;
-
-    while (userClickedTiles.includes(tile) || computerClickedTiles.includes(tile) &&
-        ((Array.from(new Set(clickedTiles)).length != 9) && (!possibleClicks.every(elem => clickedTiles.includes(elem))))) {
-        tile = Math.floor(Math.random() * 9) + 0;
-        console.log('Computer selecting best move...');
-    }
-    computerClickedTiles.push(tile);
-    clickedTiles.push(tile);
-    if (clickedTiles.length == possibleClicks.length) {
-        console.log('All cells are clicked!');
-    }
-    return tile;
+    return availableCells[Math.floor(Math.random() * availableCells.length)]
 }
 
-function setupGame(boardSize) {
-    let board = [];
-    let availableCells = [];
-    let humanMoves = [];
-    let computerMoves = [];
-    let cellBoardMap = {};
-    let count = 0;
+function setupGame(size) {
+    boardSize = size;
+    humanMoves = [];
+    computerMoves = [];
+    availableCells = [];
+    winningCombinations = [];
+    row = [];
 
-    // Setting up board
+    // Populating available cells
+    for (let i = 0; i < boardSize * boardSize; i++) {
+        availableCells.push(i);
+    }
+
+    // Generating Winning combinations
+    // Generating horizontal winning combinations
+    let cellDuplicate = availableCells.slice();
     for (let i = 0; i < boardSize; i++) {
-        let row = [];
-        for (let j = 0; j < boardSize; j++) {
-            row.push('');
-            availableCells.push(count);
-            cellBoardMap[count] = [i, j];
-            count++;
+        let a = cellDuplicate.splice(boardSize);
+        winningCombinations.push(cellDuplicate);
+        cellDuplicate = a.slice();
+    }
+
+    // Generating Vertical winning combinations
+    for (let j = 0; j < boardSize; j++) {
+        row = [];
+        for (let i = j; row.length < boardSize; i = i + boardSize) {
+            row.push(i);
         }
-        board.push(row);
+        winningCombinations.push(row);
+    }
+
+    // Generating diagonal winning combinations
+    row = [];
+    for (let i = 0; row.length < boardSize; i = i + (boardSize + 1)) {
+        row.push(i);
+    }
+    winningCombinations.push(row);
+
+    row = [];
+    for (let i = (boardSize - 1); row.length < boardSize; i = i + (boardSize - 1)) {
+        row.push(i);
+    }
+    winningCombinations.push(row);
+
+    if (availableCells.length != 0 && winningCombinations.length != 0) {
+        return {
+            message: 'success'
+        }
+    }
+    else {
+        return {
+            message: 'failure'
+        }
+    }
+}
+
+function savePlayerMove(player, cellClicked) {
+    if (!(availableCells.includes(cellClicked)) || cellClicked == undefined || cellClicked == null) {
+        return RangeError('Player selected invalid cell!');
+    }
+
+    if (player == human) {
+        humanMoves.push(cellClicked);
+        availableCells.splice(availableCells.indexOf(cellClicked), 1);
+    } else if (player == computer) {
+        computerMoves.push(cellClicked);
+        availableCells.splice(availableCells.indexOf(cellClicked), 1);
+    }
+    else {
+        return Error("Invalid Player!");
+    }
+}
+
+function checkWinner(player) {
+    let moves = [];
+
+    if (availableCells.length == 0) {
+        return {
+            winner: 'tie',
+            winningCombination: []
+        }
+    }
+
+    if (player === human) {
+        moves = humanMoves;
+    }
+    else if (player === computer) {
+        moves = computerMoves;
+    } else {
+        return {
+            error: 'Invalid Player'
+        }
+    }
+
+    if (moves.length >= boardSize) {
+        /*         return winningCombinations.find((winningCombination) => {
+                    let result = winningCombination.every((elem) => {
+                        moves.indexOf(elem) > -1;
+                    });
+                    if (result) {
+                        return {
+                            winner: player,
+                            winningCombination: winningCombination
+                        }
+                    }
+                }); */
+        let combination = winningCombinations.find(winningCombination =>
+            winningCombination.every(elem =>
+                moves.indexOf(elem) > -1)
+        )
+        if (combination) {
+            return {
+                winner: player,
+                winningCombination: combination
+            }
+        }
     }
 }
 
 module.exports = {
+    human,
+    computer,
     setupGame,
-    savePlayerMove,
     getComputerMove,
-    userClickedTiles,
-    computerClickedTiles
+    savePlayerMove,
+    checkWinner
 }
