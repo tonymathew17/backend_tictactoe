@@ -63,13 +63,11 @@ function setupGame(size) {
     winningCombinations.push(row);
 
     if (availableCells.length != 0 && winningCombinations.length != 0) {
-        return {
-            message: 'success'
-        }
+        return availableCells;
     }
     else {
         return {
-            message: 'failure'
+            error: 'failure'
         }
     }
 }
