@@ -92,13 +92,6 @@ function savePlayerMove(player, cellClicked) {
 function checkWinner(player) {
     let moves = [];
 
-    if (availableCells.length == 0) {
-        return {
-            winner: 'tie',
-            winningCombination: []
-        }
-    }
-
     if (player === human) {
         moves = humanMoves;
     }
@@ -131,6 +124,14 @@ function checkWinner(player) {
                 winner: player,
                 winningCombination: combination
             }
+        }
+    }
+
+    // Check if game is tied
+    if (availableCells.length == 0) {
+        return {
+            winner: 'tie',
+            winningCombination: []
         }
     }
 }
