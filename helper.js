@@ -1,8 +1,3 @@
-let userClickedTiles = [];
-let computerClickedTiles = [];
-let clickedTiles = [];
-let possibleClicks = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
 let availableCells = [];
 let humanMoves = [];
 let computerMoves = [];
@@ -18,6 +13,9 @@ function getComputerMove() {
     return availableCells[Math.floor(Math.random() * availableCells.length)]
 }
 
+/**@description This function setups the game. Initializes variables, generates availableCells and winningCombinations
+ * @param size - Board size
+*/
 function setupGame(size) {
     boardSize = size;
     humanMoves = [];
@@ -72,6 +70,11 @@ function setupGame(size) {
     }
 }
 
+/**@description This function saves the player move. Updates availableCells array by removing the clicked cell by user,
+ * pushing the clicked cell to either humanMoves/computerMoves depending on who made the move
+ * @param player - The player in context which made the move
+ * @param cellClicked - The cell clicked by the player in context
+*/
 function savePlayerMove(player, cellClicked) {
     if (!(availableCells.includes(cellClicked)) || cellClicked == undefined || cellClicked == null) {
         return RangeError('Player selected invalid cell!');
@@ -89,6 +92,9 @@ function savePlayerMove(player, cellClicked) {
     }
 }
 
+/**@description This function is used to check if the current move by any player has won them the game/tied
+ * @param player - The player in context
+*/
 function checkWinner(player) {
     let moves = [];
 
@@ -103,18 +109,8 @@ function checkWinner(player) {
         }
     }
 
+    // Finding winning combination
     if (moves.length >= boardSize) {
-        /*         return winningCombinations.find((winningCombination) => {
-                    let result = winningCombination.every((elem) => {
-                        moves.indexOf(elem) > -1;
-                    });
-                    if (result) {
-                        return {
-                            winner: player,
-                            winningCombination: winningCombination
-                        }
-                    }
-                }); */
         let combination = winningCombinations.find(winningCombination =>
             winningCombination.every(elem =>
                 moves.indexOf(elem) > -1)
