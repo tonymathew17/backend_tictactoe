@@ -6,11 +6,86 @@ let row = [];
 const human = 'human';
 const computer = 'computer';
 let boardSize;
-
+let scoreMapping = {
+    human: -10,
+    computer: 10,
+    tie: 0
+}
 
 /**@description This function gets the computer move based on the tile user clicked */
 function getComputerMove() {
-    return availableCells[Math.floor(Math.random() * availableCells.length)]
+    let bestScore = -Infinity;
+    let optimalMove;
+    for (let i = 0; i < availableCells.length; i++) {
+        // Temporarily updating availableCells and computerMoves
+        let move = availableCells[i];
+        availableCells.splice(i, 1);
+        computerMoves.push(move);
+
+        // Calling minimax method to get optimal move
+        let score = minimax(computer, availableCells, 0, false);
+
+        // Resetting availableCells and computerMoves to original state
+        availableCells.splice(i, 0, move);
+        computerMoves.splice(computerMoves.indexOf(move), 1);
+
+        if (score > bestScore) {
+            bestScore = score;
+            optimalMove = move;
+        }
+    }
+    return optimalMove;
+}
+
+/**@description minimax method returns the best score corresponding to current state of the game
+ * @param player - The player in context
+ * @param availableCells - Array containing available cells
+ * @param depth - The current depth of the minimax tree
+ * @param isMaximizing - Variable saying if the current player in context is trying to maximize or minimize the score
+*/
+function minimax(player, availableCells, depth, isMaximizing) {
+    let result = checkWinner(player);
+    if (result !== null && result !== undefined) {
+        return scoreMapping[result.winner];
+    }
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < availableCells.length; i++) {
+            // Temporarily updating availableCells and computerMoves
+            let move = availableCells[i];
+            availableCells.splice(i, 1);
+            computerMoves.push(move);
+
+            // Calling minimax method to get optimal move
+            let score = minimax(computer, availableCells, depth + 1, false);
+
+            // Resetting availableCells and computerMoves to original state
+            availableCells.splice(i, 0, move);
+            computerMoves.splice(computerMoves.indexOf(move), 1);
+
+            bestScore = Math.max(score, bestScore);
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < availableCells.length; i++) {
+            // Temporarily updating availableCells and humanMoves
+            let move = availableCells[i];
+            availableCells.splice(i, 1);
+            humanMoves.push(move);
+
+            // Calling minimax method to get optimal move
+            let score = minimax(human, availableCells, depth + 1, true);
+
+            // Resetting availableCells and humanMoves to original state
+            availableCells.splice(i, 0, move);
+            humanMoves.splice(humanMoves.indexOf(move), 1);
+
+            bestScore = Math.min(score, bestScore);
+        }
+        return bestScore;
+    }
 }
 
 /**@description This function setups the game. Initializes variables, generates availableCells and winningCombinations
